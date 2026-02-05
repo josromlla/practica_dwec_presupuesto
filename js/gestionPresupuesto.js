@@ -1,7 +1,7 @@
 // TODO: Crear las funciones, objetos y variables indicadas en el enunciado
-let presupuesto=0;
-// TODO: Variable global
 
+// TODO: Variable global
+let presupuesto=0;
 
 function actualizarPresupuesto(valor) {
     let resultado=0;
@@ -10,7 +10,7 @@ function actualizarPresupuesto(valor) {
         resultado=valor;
     }
     else{
-        alert("ERROR, dato no válido");
+        console.log("ERROR, dato no válido");
         resultado=-1;
     }
 
@@ -18,7 +18,7 @@ function actualizarPresupuesto(valor) {
 }
 
 function mostrarPresupuesto() {
-    alert("Tu presupuesto actual es de " + presupuesto + " €");   
+    return ("Tu presupuesto actual es de " + presupuesto + " €");   
 }
 
 
@@ -34,7 +34,7 @@ function CrearGasto(descripcion, valor) {
 
     
     this.mostrarGasto = function() {
-        alert("Gasto correspondiente a "+ this.descripcion +" con valor " + this.valor +" €") 
+        return("Gasto correspondiente a "+ this.descripcion +" con valor " + this.valor +" €") 
     };
 
     this.actualizarDescripcion = function(descripcion) {
