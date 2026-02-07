@@ -23,6 +23,55 @@ function mostrarPresupuesto() {
     return ("Tu presupuesto actual es de " + presupuesto + " €");   
 }
 
+function listarGastos(){
+    return gastos;
+} 
+function anyadirGasto(gasto){
+    gasto.id=idGasto;
+    idGasto++;
+    gastos.push(gasto);
+}
+function borrarGasto(id){
+        //buscamos el indice
+        let indice=-1;
+        for (let i=0 ; i<gastos.length ; i++){
+            if ( gastos[i].id == id )
+                indice=i
+        }
+        
+        //eliminamos el registro con ese indice
+        if (indice !==-1 )
+            gastos.splice(indice,1);
+        else
+            console.log("el registro no se encuentra")    
+}
+
+function calcularTotalGastos(){
+    
+    let sumaGastos=0;
+    for (let i=0;i<gastos.length;i++){
+       sumaGastos=sumaGastos+ gastos[i].valor;
+    }
+    return sumaGastos;
+}
+
+function calcularBalance(){
+    let gastosTotales=calcularTotalGastos();
+    return presupuesto-gastosTotales;
+    
+}
+
+function compruebaFecha(fecha){
+    //intentamos convertir la fecha recibida en timestamp
+    let timestamp=Date.parse(fecha)
+    //condicion para comprobar si timestamp no es un número
+    if (isNaN(timestamp)){
+        return fecha= new Date().getTime();
+    }
+    else{
+        return timestamp;
+    }
+}
 
 function CrearGasto(descripcion, valor, fecha ,...etiquetas ) {
     
@@ -34,8 +83,6 @@ function CrearGasto(descripcion, valor, fecha ,...etiquetas ) {
     }
     
     this.descripcion = descripcion;
-    this.idGasto=idGasto+1;
-    idGasto++;
 
     this.fecha=compruebaFecha(fecha);    
     
@@ -60,15 +107,13 @@ function CrearGasto(descripcion, valor, fecha ,...etiquetas ) {
         }
     };
     this.mostrarGastoCompleto = function(){
-       texto= "Gasto correspondiente a "+this.descripcion+" con valor "+"this.valor"+" €. \n"+
-       "Fecha: " +this.fecha.toLocaleString()+ "\n"+
-        "Etiquetas:"
-        
-       // Etiquetas:
-       // - ETIQUETA 1
-       // - ETIQUETA 2
-       // - ETIQUETA 3
-        
+       let fechaFormateada = new Date(this.fecha).toLocaleString();
+       let texto= "Gasto correspondiente a "+this.descripcion+" con valor "+this.valor+" €.\n" + "Fecha: " +fechaFormateada+ "\n"+ "Etiquetas:\n";        
+       
+        for (let i=0; i<this.etiquetas.length;i++) {
+            texto=texto+ "- "+this.etiquetas[i]+"\n"
+       }
+              
         return texto;
     };
     this.actualizarFecha = function(fecha){
@@ -87,49 +132,26 @@ function CrearGasto(descripcion, valor, fecha ,...etiquetas ) {
             }            
          }
     };
-
-    this.borrarGasto = function(registro){
-        //buscamos el indice
-        let indice=-1;
-        for (i=0 ; i<gastos.length ; i++){
-            if ( gastos[i].idGasto == registro )
-                indice=i
-        }
-        
-        //eliminamos el registro con ese indice
-        if (indice !==-1 )
-            gastos.splice(indice,1);
+    this.borrarEtiquetas=function(...etiquetasBorrar){
+            
+         //recorremos el array de las etiquetas a eliminar
+         for (let i=0;i<etiquetasBorrar.length;i++){
+            let etiquetaBorrar=etiquetasBorrar[i];
+            let indice=-1;
+            //buscamos el indice de la etiqueta
+            for (let j=0;j<this.etiquetas.length;j++){
+                 if (this.etiquetas[j] == etiquetaBorrar )
+                    indice=j
+            }
+            //boramos la etiqueta
+            if (indice !==-1 )
+            this.etiquetas.splice(indice,1);
         else
-            console.log("el registro no se encuentra")
-    };
-}
-
-function listarGastos(){
-    return gastos;
-} 
-function anyadirGasto(){
-
-}
-function borrarGasto(){
-
-}
-function calcularTotalGastos(){
-
-}
-function calcularBalance(){
-
-}
-
-function compruebaFecha(fecha){
-    //intentamos convertir la fecha recibida en timestamp
-    let timestamp=Date.parse(fecha)
-    //condicion para comprobar si timestamp no es un número
-    if (isNaN(timestamp)){
-        return fecha= new Date().getTime();
+            console.log("la etiqueta no se encuentra")
+         }
+         
     }
-    else{
-        return timestamp;
-    }
+
 }
 
 // NO MODIFICAR A PARTIR DE AQUÍ: exportación de funciones y objetos creados para poder ejecutar los tests.
