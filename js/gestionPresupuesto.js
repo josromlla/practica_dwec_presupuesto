@@ -72,6 +72,43 @@ function compruebaFecha(fecha){
         return timestamp;
     }
 }
+function filtrarGastos(filtro){
+    
+   // fechaDesde - Fecha mínima de creación del gasto. Su valor deberá ser un string con formato válido que pueda entender la función Date.parse.
+   // fechaHasta - Fecha máxima de creación del gasto. Su valor deberá ser un string con formato válido que pueda entender la función Date.parse.
+   // valorMinimo - Valor mínimo del gasto.
+   // valorMaximo - Valor máximo del gasto.
+   // descripcionContiene - Trozo de texto que deberá aparecer en la descripción. Deberá hacerse la comparación de manera que no se distingan mayúsculas de minúsculas.
+   
+   // etiquetasTiene - Array de etiquetas: si un gasto contiene alguna de las etiquetas indicadas en este parámetro, se deberá devolver en el resultado.
+   //  Deberá hacerse la comparación de manera que no se distingan mayúsculas de minúsculas.
+
+    let gastosFiltrados= new Array();
+    
+    if (filtro.fechaDesde===undefined){
+        
+    }
+    gastosFiltrados=gastos.filter(item=>item.valor>filtro.valorMinimo)
+
+    for (let i=0; i<gastos.length;i++){
+
+        
+        //filtrado.fechaDesde        
+        //filtrado.fechaHasta 
+        //valorMinimo
+        //valorMaximo
+        //descripcionContiene
+        //etiquetasTiene
+    }
+    //filter
+    
+
+    return gastosFiltrados;
+}
+
+function agruparGastos(){
+
+}
 
 function CrearGasto(descripcion, valor, fecha ,...etiquetas ) {
     
@@ -151,6 +188,23 @@ function CrearGasto(descripcion, valor, fecha ,...etiquetas ) {
          }
          
     }
+    this.obtenerPeriodoAgrupacion=function(periodo){
+        let resultado;
+        if(periodo=="anyo"){
+            resultado= new Date(this.fecha).toISOString().slice(0,4)
+            
+        }
+        if(periodo=="mes"){
+           resultado= new Date(this.fecha).toISOString().slice(0,7)
+        }
+        if(periodo=="dia"){
+            
+          resultado= new Date(this.fecha).toISOString().slice(0,10)
+        }
+        return resultado;
+    }
+    
+
 
 }
 
@@ -165,5 +219,9 @@ export   {
     anyadirGasto,
     borrarGasto,
     calcularTotalGastos,
-    calcularBalance
+    calcularBalance,
+    filtrarGastos,
+    agruparGastos
+
+
 }
