@@ -74,33 +74,74 @@ function compruebaFecha(fecha){
 }
 function filtrarGastos(filtro){
     
-   // fechaDesde - Fecha mínima de creación del gasto. Su valor deberá ser un string con formato válido que pueda entender la función Date.parse.
-   // fechaHasta - Fecha máxima de creación del gasto. Su valor deberá ser un string con formato válido que pueda entender la función Date.parse.
-   // valorMinimo - Valor mínimo del gasto.
-   // valorMaximo - Valor máximo del gasto.
-   // descripcionContiene - Trozo de texto que deberá aparecer en la descripción. Deberá hacerse la comparación de manera que no se distingan mayúsculas de minúsculas.
    
-   // etiquetasTiene - Array de etiquetas: si un gasto contiene alguna de las etiquetas indicadas en este parámetro, se deberá devolver en el resultado.
+   
+   // etiquetasTiene - Array de etiquetas: si un gasto contiene alguna de las etiquetas indicadas en este parámetro, se deberá devolver
+   //  en el resultado.
    //  Deberá hacerse la comparación de manera que no se distingan mayúsculas de minúsculas.
+   //let gastosFiltrados= new Array();
+   let gastosFiltrados = [...gastos]; 
 
-    let gastosFiltrados= new Array();
+    if (Object.keys(filtro).length > 0){
+        if (filtro.fechaDesde){            
+            let timestamp=Date.parse(filtro.fechaDesde);
+            if (!isNaN(timestamp)){
+                gastosFiltrados=gastosFiltrados.filter(item=>item.fecha >= timestamp)
+            }
+            else{
+                console.log("la fecha no es válida")
+            }
+             
+
+        }
+        if (filtro.fechaHasta){
+            if (filtro.fechaHasta){            
+                let timestamp=Date.parse(filtro.fechaHasta);
+                if (!isNaN(timestamp)){
+                    gastosFiltrados=gastosFiltrados.filter(item=>item.fecha <= timestamp)
+                }
+                else{
+                    console.log("la fecha no es válida")
+                }
+            }
+        }
+
+        if (filtro.valorMinimo){                
+            gastosFiltrados=gastosFiltrados.filter(item=>item.valor >filtro.valorMinimo)
+        }
+
+        if (filtro.valorMaximo){
+           gastosFiltrados=gastosFiltrados.filter(item=>item.valor<filtro.valorMaximo)    
+        }
+
+        if (filtro.descripcionContiene){
+            gastosFiltrados=gastosFiltrados.filter(item=>item.descripcion.toLowerCase().includes(filtro.descripcionContiene.toLowerCase()))            
+        }
+
+        if (filtro.etiquetasTiene){
+            gastosFiltrados=gastosFiltrados.filter(item=> {
+                for (let i=0;i<filtro.etiquetasTiene.length;i++){
+                    let etiquetaBuscar=filtro.etiquetasTiene[i].toLowerCase();
+
+                    for (let j=0; j<item.etiquetas.length;j++){
+                        if (item.etiquetas[j].toLowerCase()===etiquetaBuscar){
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            })
+          
+        }
+
+
+
+        
+    }
     
-    if (filtro.fechaDesde===undefined){
-        
-    }
-    gastosFiltrados=gastos.filter(item=>item.valor>filtro.valorMinimo)
-
-    for (let i=0; i<gastos.length;i++){
-
-        
-        //filtrado.fechaDesde        
-        //filtrado.fechaHasta 
-        //valorMinimo
-        //valorMaximo
-        //descripcionContiene
-        //etiquetasTiene
-    }
-    //filter
+    
+    
+    
     
 
     return gastosFiltrados;
