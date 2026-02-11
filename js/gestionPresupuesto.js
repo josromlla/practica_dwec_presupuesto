@@ -73,13 +73,7 @@ function compruebaFecha(fecha){
     }
 }
 function filtrarGastos(filtro){
-    
    
-   
-   // etiquetasTiene - Array de etiquetas: si un gasto contiene alguna de las etiquetas indicadas en este parámetro, se deberá devolver
-   //  en el resultado.
-   //  Deberá hacerse la comparación de manera que no se distingan mayúsculas de minúsculas.
-   //let gastosFiltrados= new Array();
    let gastosFiltrados = [...gastos]; 
 
     if (Object.keys(filtro).length > 0){
@@ -131,24 +125,38 @@ function filtrarGastos(filtro){
                 }
                 return false;
             })
-          
         }
-
-
-
-        
     }
     
-    
-    
-    
-    
-
     return gastosFiltrados;
 }
 
-function agruparGastos(){
+function agruparGastos(periodo,etiquetas,fechaDesde,fechaHasta){
+    let fechaD;
+    let fechaH;
+     let timestamp=Date.parse(fechaDesde);
+            if (!isNaN(timestamp)){
+                fechaD=fechaDesde;
+            }
 
+     timestamp=Date.parse(fechaHasta);
+            if (!isNaN(timestamp)){
+                fechaH=fechaHasta;
+            }
+            else{
+                fechaH=new Date().toISOString();
+            }
+    
+
+    let filtro={etiquetasTiene: etiquetas, fechaDesde: fechaD, fechaHasta: fechaH};
+
+    let gastosFiltrados=filtrarGastos(filtro);
+     
+    return gastosFiltrados.reduce ((acc,gasto)=>{
+        let periodoAgrupacion=gasto.obtenerPeriodoAgrupacion(periodo)
+        acc[periodoAgrupacion] = (acc[periodoAgrupacion] || 0) + gasto.valor;
+        return acc;
+    }, {});    
 }
 
 function CrearGasto(descripcion, valor, fecha ,...etiquetas ) {
