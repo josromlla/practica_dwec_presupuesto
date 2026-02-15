@@ -1,4 +1,6 @@
 
+import * as gestionPresupuesto from "./gestionPresupuesto.js";
+
 
 function mostrarDatoEnId(idElemento, valor) {
 
@@ -94,6 +96,47 @@ function mostrarGastosAgrupadosWeb(id, agrup, periodo) {
         
         contenedor.append(divAgrupacion);
     
+
+}
+
+function repintar(){
+    
+    //Mostrar el presupuesto en div#presupuesto (funciones mostrarPresupuesto y mostrarDatoEnId)
+    mostrarDatoEnId("presupuesto",gestionPresupuesto.mostrarPresupuesto());
+
+    //Mostrar los gastos totales en div#gastos-totales (funciones calcularTotalGastos y mostrarDatoEnId)
+    mostrarDatoEnId("gastos-totales",gestionPresupuesto.calcularTotalGastos())
+
+    //Mostrar el balance total en div#balance-total (funciones calcularBalance y mostrarDatoEnId)
+    mostrarDatoEnId("balance-total", gestionPresupuesto.calcularBalance())
+
+    //Borrar el contenido de div#listado-gastos-completo, para que el paso siguiente no duplique la información. 
+    // Puedes utilizar innerHTML para borrar el contenido de dicha capa.
+    let elemento=document.getElementById("listado-gastos-completo");
+    elemento.innerHTML="";
+
+    //Mostrar el listado completo de gastos en div#listado-gastos-completo (funciones listarGastos y mostrarGastoWeb)
+    let gastos=gestionPresupuesto.listarGastos()
+    for (let i=0; i<gastos.length ; i++){
+        mostrarGastoWeb("listado-gastos-completo",gastos[i])
+    }
+}
+
+function actualizarPresupuestoWeb (){
+
+
+    let presupuesto= promt("Introduzca presupuesto");
+    gestionPresupuesto.actualizarPresupuesto(Number(presupuesto))
+    repintar();
+
+   
+   
+
+//Una vez definida la función, se añadirá como manejadora del evento click del botón actualizarpresupuesto
+//  mediante addEventListener. Para ello habrá que obtener el elemento botón correspondiente previamente.
+}
+
+function nuevoGastoWeb (){
 
 }
 
