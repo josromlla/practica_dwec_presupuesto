@@ -51,94 +51,141 @@ function mostrarGastoWeb(idElemento, gasto) {
     for (let i = 0; i < gasto.etiquetas.length; i++) {
         let spanEtiqueta = document.createElement('span')
         spanEtiqueta.className = "gasto-etiquetas-etiqueta";
-        spanEtiqueta.textContent = gasto.etiquetas[i]+" ";
+        spanEtiqueta.textContent = gasto.etiquetas[i] + " ";
         divEtiquetas.append(spanEtiqueta);
     }
     divGasto.append(divEtiquetas);
     //</div>
     container.append(divGasto);
+
+    //boton editar
+    let botonEditar=document.createElement("button");
+    botonEditar.className=("gasto-editar");
+    botonEditar.innerText=("Editar")
+    botonEditar.setAttribute("type","button");
+    let edbut= Object.create(EditarHandle);
+    edbut.gasto=gasto;
+    botonEditar.addEventListener("click",edbut);
+    divGasto.append(botonEditar);
+
+    //boton borrar
+    
 }
 
 function mostrarGastosAgrupadosWeb(id, agrup, periodo) {
 
-   let contenedor =document.getElementById(id);
+    let contenedor = document.getElementById(id);
 
     // <div class="agrupacion">          
-       let divAgrupacion =document.createElement("div");
-       divAgrupacion.className="agrupacion";
+    let divAgrupacion = document.createElement("div");
+    divAgrupacion.className = "agrupacion";
 
-       //     <!-- PERIODO será "mes", "día" o "año" en función de si el parámetro
-      // de la función es "mes", "dia" o "anyo" respectivamente -->
-      //      <h1>Gastos agrupados por PERIODO</h1>
-        let h1Gastos=document.createElement("h1");
-        h1Gastos.textContent="Gastos agrupados por "+periodo;
-        divAgrupacion.append(h1Gastos);
+    //     <!-- PERIODO será "mes", "día" o "año" en función de si el parámetro
+    // de la función es "mes", "dia" o "anyo" respectivamente -->
+    //      <h1>Gastos agrupados por PERIODO</h1>
+    let h1Gastos = document.createElement("h1");
+    h1Gastos.textContent = "Gastos agrupados por " + periodo;
+    divAgrupacion.append(h1Gastos);
 
-       //     <!-- Se deberá crear un div.agrupacion-dato para cada propiedad del objeto agrup:     
+    //     <!-- Se deberá crear un div.agrupacion-dato para cada propiedad del objeto agrup:     
 
-        Object.entries(agrup).forEach(([clave, valor]) => {
-            let divAgrupacionDato =document.createElement("div");
-            divAgrupacionDato.className="agrupacion-dato";
+    Object.entries(agrup).forEach(([clave, valor]) => {
+        let divAgrupacionDato = document.createElement("div");
+        divAgrupacionDato.className = "agrupacion-dato";
 
-            let spanAgrupacionDatoClave =document.createElement("span");
-            spanAgrupacionDatoClave.className="agrupacion-dato-clave";
-            spanAgrupacionDatoClave.textContent=clave;
-            divAgrupacionDato.append(spanAgrupacionDatoClave);
+        let spanAgrupacionDatoClave = document.createElement("span");
+        spanAgrupacionDatoClave.className = "agrupacion-dato-clave";
+        spanAgrupacionDatoClave.textContent = clave;
+        divAgrupacionDato.append(spanAgrupacionDatoClave);
 
-            let spanAgrupacionDatoValor =document.createElement("span");
-            spanAgrupacionDatoValor.className="agrupacion-dato-valor"
-            spanAgrupacionDatoValor.textContent=valor;
-            divAgrupacionDato.append(spanAgrupacionDatoValor)
+        let spanAgrupacionDatoValor = document.createElement("span");
+        spanAgrupacionDatoValor.className = "agrupacion-dato-valor"
+        spanAgrupacionDatoValor.textContent = valor;
+        divAgrupacionDato.append(spanAgrupacionDatoValor)
 
 
-            divAgrupacion.append(divAgrupacionDato);
-        });
-        
-        contenedor.append(divAgrupacion);
-    
+        divAgrupacion.append(divAgrupacionDato);
+    });
+
+    contenedor.append(divAgrupacion);
+
 
 }
 
-function repintar(){
-    
+function repintar() {
+
     //Mostrar el presupuesto en div#presupuesto (funciones mostrarPresupuesto y mostrarDatoEnId)
-    mostrarDatoEnId("presupuesto",gestionPresupuesto.mostrarPresupuesto());
+    mostrarDatoEnId("presupuesto", gestionPresupuesto.mostrarPresupuesto());
 
     //Mostrar los gastos totales en div#gastos-totales (funciones calcularTotalGastos y mostrarDatoEnId)
-    mostrarDatoEnId("gastos-totales",gestionPresupuesto.calcularTotalGastos())
+    mostrarDatoEnId("gastos-totales", gestionPresupuesto.calcularTotalGastos())
 
     //Mostrar el balance total en div#balance-total (funciones calcularBalance y mostrarDatoEnId)
     mostrarDatoEnId("balance-total", gestionPresupuesto.calcularBalance())
 
     //Borrar el contenido de div#listado-gastos-completo, para que el paso siguiente no duplique la información. 
     // Puedes utilizar innerHTML para borrar el contenido de dicha capa.
-    let elemento=document.getElementById("listado-gastos-completo");
-    elemento.innerHTML="";
+    let elemento = document.getElementById("listado-gastos-completo");
+    elemento.innerHTML = "";
 
     //Mostrar el listado completo de gastos en div#listado-gastos-completo (funciones listarGastos y mostrarGastoWeb)
-    let gastos=gestionPresupuesto.listarGastos()
-    for (let i=0; i<gastos.length ; i++){
-        mostrarGastoWeb("listado-gastos-completo",gastos[i])
+    let gastos = gestionPresupuesto.listarGastos()
+    for (let i = 0; i < gastos.length; i++) {
+        mostrarGastoWeb("listado-gastos-completo", gastos[i])
     }
 }
 
-function actualizarPresupuestoWeb (){
+function actualizarPresupuestoWeb() {
 
-
-    let presupuesto= promt("Introduzca presupuesto");
+    let presupuesto = prompt("Introduzca presupuesto");
     gestionPresupuesto.actualizarPresupuesto(Number(presupuesto))
     repintar();
+}
+//ponemos fuera de la funcion el eventlistener
+let botonActualizar = document.getElementById("actualizarpresupuesto");
+botonActualizar.addEventListener("click", actualizarPresupuestoWeb);
 
-   
-   
+function nuevoGastoWeb() {
 
-//Una vez definida la función, se añadirá como manejadora del evento click del botón actualizarpresupuesto
-//  mediante addEventListener. Para ello habrá que obtener el elemento botón correspondiente previamente.
+    //preguntar gasto al usuario
+    let descripcion = prompt("introduzca la Descripción del gasto");
+    let valor = Number(prompt("introduzca el Valor del gasto"));
+    let fecha = prompt("introduzca la fecha del gasto en formato yyyy-mm-dd");
+    let etiquetas = prompt("introduzca las etiquetas del gasto separadas por comas").split(",");
+    gestionPresupuesto.anyadirGasto(new gestionPresupuesto.CrearGasto(descripcion, parseFloat(valor), fecha, ...etiquetas));
+    repintar();
+}
+//ponemos fuera de la funcion el eventlistener
+let botonAnyadirGasto = document.getElementById("anyadirgasto");
+botonAnyadirGasto.addEventListener("click", nuevoGastoWeb);
+
+//editar gasto
+let EditarHandle = {
+    handleEvent: function (e) {
+        fechaOriginal= new Date(this.gasto.fecha).toISOString().substring(0,10);
+        let descripcion = prompt("introduzca la Descripción del gasto",this.gasto.descripcion);
+        let valor = Number(prompt("introduzca el Valor del gasto", this.gasto.valor));
+        let fecha = prompt("introduzca la fecha del gasto en formato yyyy-mm-dd",fechaOriginal);
+        let etiquetas = prompt("introduzca las etiquetas del gasto separadas por comas",this.gasto.etiquetas.join(","));
+
+        this.gasto.actualizarDescripcion(descripcion);
+        this.gasto.actualizarValor(valor);
+        this.gasto.actualizarFecha(fecha);
+        this.gasto.anyadirEtiquetas(...etiquetas.split(","))
+        repintar()
+    }
 }
 
-function nuevoGastoWeb (){
+
+
+function BorrarHandle() {
+
 
 }
+function BorrarEtiquetasHandle() {
+
+}
+
 
 export {
     mostrarDatoEnId,
