@@ -335,36 +335,56 @@ let crearGastoFormulario = document.getElementById("anyadirgasto-formulario")
 crearGastoFormulario.addEventListener("click", nuevoGastoWebFormulario);
 
 
-function filtrarGastosWeb(e){
+function filtrarGastosWeb(e) {
     e.preventDefault();
 
-    let filtro={};
-    filtro.valorMinimo=e.target["formulario-filtrado-valor-minimo"].value;
-    filtro.valorMaximo=e.target["formulario-filtrado-valor-maximo"].value;
-    filtro.fechaDesde=e.target["formulario-filtrado-fecha-desde"].value;
-    filtro.fechaHasta=e.target["formulario-filtrado-fecha-hasta"].value;
-    filtro.descripcionContiene=e.target["formulario-filtrado-descripcion"].value;
+    let filtro = {};
+    filtro.valorMinimo = e.target["formulario-filtrado-valor-minimo"].value;
+    filtro.valorMaximo = e.target["formulario-filtrado-valor-maximo"].value;
+    filtro.fechaDesde = e.target["formulario-filtrado-fecha-desde"].value;
+    filtro.fechaHasta = e.target["formulario-filtrado-fecha-hasta"].value;
+    filtro.descripcionContiene = e.target["formulario-filtrado-descripcion"].value;
 
-    if (e.target["formulario-filtrado-etiquetas-tiene"].value){
-        filtro.etiquetasTiene=gestionPresupuesto.transformarListadoEtiquetas(e.target["formulario-filtrado-etiquetas-tiene"].value);
+    if (e.target["formulario-filtrado-etiquetas-tiene"].value) {
+        filtro.etiquetasTiene = gestionPresupuesto.transformarListadoEtiquetas(e.target["formulario-filtrado-etiquetas-tiene"].value);
 
     }
-    
-    let lgastos=document.getElementById("listado-gastos-completo");
-    lgastos.innerHTML="";
-    let gastosFiltrados=gestionPresupuesto.filtrarGastos(filtro)
-    for(let i=0;i<gastosFiltrados.length;i++){
-        mostrarGastoWeb("listado-gastos-completo",gastosFiltrados[i]);
+
+    let lgastos = document.getElementById("listado-gastos-completo");
+    lgastos.innerHTML = "";
+    let gastosFiltrados = gestionPresupuesto.filtrarGastos(filtro)
+    for (let i = 0; i < gastosFiltrados.length; i++) {
+        mostrarGastoWeb("listado-gastos-completo", gastosFiltrados[i]);
     }
 
 }
 
 //evento boton formulario
-let form_filtrado=document.getElementById("formulario-filtrado");
-form_filtrado.addEventListener("submit",filtrarGastosWeb)
+let form_filtrado = document.getElementById("formulario-filtrado");
+form_filtrado.addEventListener("submit", filtrarGastosWeb)
 
 
 
+function guardarGastosWeb() {
+    localStorage.setItem("GestorGastosDWEC", JSON.stringify(gestionPresupuesto.listarGastos()))
+
+
+}
+let botonGuardarGastosWeb = document.getElementById("guardar-gastos");
+botonGuardarGastosWeb.addEventListener("click", guardarGastosWeb)
+
+function cargarGastosWeb(e) {
+    let datos = localStorage.getItem("GestorGastosDWEC");
+    if (datos) {
+        gestionPresupuesto.cargarGastos(JSON.parse(datos))
+    } else {
+        gestionPresupuesto.cargarGastos([])
+    }
+    repintar();
+}
+
+let botonCargarGastosWeb = document.getElementById("cargar-gastos");
+botonCargarGastosWeb.addEventListener("click", cargarGastosWeb)
 
 export {
     mostrarDatoEnId,
