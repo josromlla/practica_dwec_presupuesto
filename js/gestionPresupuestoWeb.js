@@ -1,6 +1,10 @@
 
 import * as gestionPresupuesto from "./gestionPresupuesto.js";
 
+//Variables para interactuar con API
+let urlBase = "https://suhhtqjccd.execute-api.eu-west-1.amazonaws.com/latest/"
+let usuario = document.getElementById("nombre_usuario").value;
+
 
 function mostrarDatoEnId(idElemento, valor) {
 
@@ -84,6 +88,16 @@ function mostrarGastoWeb(idElemento, gasto) {
     borbut.gasto = gasto;
     botonBorrar.addEventListener("click", borbut);
     divGasto.append(botonBorrar);
+
+    //boton borrar (API)
+    let botonBorrarApi = document.createElement("button");
+    botonBorrarApi.className = "gasto-borrar-api";
+    botonBorrarApi.innerText = "Borrar (API)";
+    botonBorrarApi.setAttribute("type", "button");
+    let borButApi = Object.create(BorrarHandleApi);
+    borButApi.gasto = gasto;
+    botonBorrarApi.addEventListener("click", borButApi);
+    divGasto.append(botonBorrarApi);
 
     //boton editar con formulario        
 
@@ -221,6 +235,34 @@ let BorrarEtiquetasHandle = {
     }
 }
 
+//borrar gasto API
+let BorrarHandleApi = {
+    handleEvent: async function (e) {
+
+        //url para obtener los datos del gasto
+        let urlUsuario = urlBase + usuario + "/" + this.gasto.gastoId;
+
+        //peticion
+        let respuesta = await fetch(urlUsuario,
+            {
+                method: "DELETE"
+            }
+        );
+
+        //comprobacion
+        if (respuesta.ok) {
+
+            console.log("el gasto se ha borrado correctamente en la API")
+            cargarGastosApi();
+        }
+
+        else {
+            console.log("Error en fetch DELETE");
+        }
+
+        repintar();
+    }
+}
 
 //formulario cerrar
 let FormularioCerrar = {
@@ -253,6 +295,9 @@ function nuevoGastoWebFormulario(event) {
     //boton enviar
     formulario.addEventListener("submit", formularioCrearHandle);
 
+    //evento para el boton enviar API del formulario
+    formulario.querySelector(".gasto-enviar-api").addEventListener("click", formuCrearHandleAPI);
+
     //boton cancelar
     let cancelarHandle = Object.create(FormularioCerrar)
     cancelarHandle.formulario = formulario;
@@ -280,8 +325,6 @@ let FormuHandle = {
         repintar();
 
         this.botonEditar.disabled = false;
-
-
     }
 }
 
@@ -321,6 +364,10 @@ let EditarHandleFormulario = {
         canHandle.botonEditar = botonPulsado;
         botonCancelar.addEventListener("click", canHandle);
 
+        //Evento para el boton Enviar (API)
+        let forHandleAPI = Object.create(FormuHandleApi);
+        forHandleAPI.gasto=this.gasto;
+        formu.querySelector("button.gasto-enviar-api").addEventListener("click",forHandleAPI)
 
         //desactivar boton
         botonPulsado.disabled = true;
@@ -385,6 +432,109 @@ function cargarGastosWeb(e) {
 
 let botonCargarGastosWeb = document.getElementById("cargar-gastos");
 botonCargarGastosWeb.addEventListener("click", cargarGastosWeb)
+
+async function cargarGastosApi(e) {
+
+    let urlUsuario = urlBase + usuario;
+
+
+    let respuesta = await fetch(urlUsuario);
+
+    if (respuesta.ok) {
+
+        let datos = await respuesta.json();
+        if (datos) {
+            gestionPresupuesto.cargarGastos(datos)
+        } else {
+            gestionPresupuesto.cargarGastos([])
+        }
+
+
+    } else {
+        console.log("Error-HTTP: " + respuesta.status);
+    }
+
+    repintar();
+}
+
+document.getElementById("cargar-gastos-api").addEventListener("click", cargarGastosApi)
+
+//funcion para guardar gasto formulario en API
+
+async function formuCrearHandleAPI(event) {
+
+    //creamos url
+    let urlUsuario = urlBase + usuario
+
+    //creamos una referencia al formulario
+    let formulario = event.target.form;
+
+    //almacenamos los valores del formulario en variables
+    let descripcion = formulario.descripcion.value;
+    let valor = parseFloat(formulario.valor.value);
+    let fecha = formulario.fecha.value;
+    let etiquetas = formulario.etiquetas.value;
+
+    //creamos un nuevo gasto con los valores
+    let gasto = new gestionPresupuesto.CrearGasto(descripcion, valor, fecha, ...etiquetas.split(","))
+    //peticion fetch para crear un nuevo gasto API
+    let respuesta = await fetch(urlUsuario, {
+        method: "POST",
+        headers: {
+            'Content-Type': 'application/json;charset=utf-8'
+        },
+        body: JSON.stringify(gasto)
+    });
+
+    //comprobación
+    if (respuesta.ok) {
+        console.log("El gasto se ha añadido en la API");
+    } else {
+        console.error("Error en fetch POST ");
+    }
+    //deshabilitamos boton del formulario
+    document.getElementById("anyadirgasto-formulario").removeAttribute("disabled")
+}
+
+//objeto para el boton enviar API del formulario (editar gasto)
+
+let FormuHandleApi = {
+    handleEvent: async function (e) {
+        //creamos la url para actualizar el gasto
+        let urlUsuario = urlBase + usuario + "/" + this.gasto.gastoId;
+
+        //creamos una referencia al formulario
+        let formulario = e.target.form;
+
+        //almacenamos los valores del formulario en variables
+        let descripcion = formulario.descripcion.value;
+        let valor = parseFloat(formulario.valor.value);
+        let fecha = formulario.fecha.value;
+        let etiquetas = formulario.etiquetas.value;
+
+        //creamos un nuevo gasto con los valores
+        let gasto = new gestionPresupuesto.CrearGasto(descripcion, valor, fecha, ...etiquetas.split(","))
+
+        //peticion fetch para crear un nuevo gasto API
+        let respuesta = await fetch(urlUsuario, {
+            method: "PUT",
+            headers: {
+                'Content-Type': 'application/json;charset=utf-8'
+            },
+            body: JSON.stringify(gasto)
+        });
+
+        //comprobación
+        if (respuesta.ok) {
+            console.log("El gasto se ha actualizado en la API");
+        } else {
+            console.error("Error en fetch PUT");
+        }
+    }
+
+}
+
+
 
 export {
     mostrarDatoEnId,
