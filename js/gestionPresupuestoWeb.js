@@ -116,6 +116,7 @@ function mostrarGastoWeb(idElemento, gasto) {
 function mostrarGastosAgrupadosWeb(id, agrup, periodo) {
 
     let contenedor = document.getElementById(id);
+    contenedor.innerHTML = "";
 
     // <div class="agrupacion">          
     let divAgrupacion = document.createElement("div");
@@ -149,9 +150,106 @@ function mostrarGastosAgrupadosWeb(id, agrup, periodo) {
     });
 
     contenedor.append(divAgrupacion);
+    // Estilos
+    contenedor.style.width = "33%";
+    contenedor.style.display = "inline-block";
+    // Crear elemento <canvas> necesario para crear la gráfica
+    // https://www.chartjs.org/docs/latest/getting-started/
+    let chart = document.createElement("canvas");
+    // Variable para indicar a la gráfica el período temporal del eje X
+    // En función de la variable "periodo" se creará la variable "unit" (anyo -> year; mes -> month; dia -> day)
+    let unit = "";
+    switch (periodo) {
+        case "anyo":
+            unit = "year";
+            break;
+        case "mes":
+            unit = "month";
+            break;
+        case "dia":
+        default:
+            unit = "day";
+            break;
+    }
 
+    // Creación de la gráfica
+    // La función "Chart" está disponible porque hemos incluido las etiquetas <script> correspondientes en el fichero HTML
+    const myChart = new Chart(chart.getContext("2d"), {
+        // Tipo de gráfica: barras. Puedes cambiar el tipo si quieres hacer pruebas: https://www.chartjs.org/docs/latest/charts/line.html
+        type: 'bar',
+        data: {
+            datasets: [
+                {
+                    // Título de la gráfica
+                    label: `Gastos por ${periodo}`,
+                    // Color de fondo
+                    backgroundColor: "#555555",
+                    // Datos de la gráfica
+                    // "agrup" contiene los datos a representar. Es uno de los parámetros de la función "mostrarGastosAgrupadosWeb".
+                    data: agrup
+                }
+            ],
+        },
+        options: {
+            scales: {
+                x: {
+                    // El eje X es de tipo temporal
+                    type: 'time',
+                    time: {
+                        // Indicamos la unidad correspondiente en función de si utilizamos días, meses o años
+                        unit: unit
+                    }
+                },
+                y: {
+                    // Para que el eje Y empieza en 0
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+    // Añadimos la gráfica a la capa
+    contenedor.append(chart);
 
 }
+
+//funcion antigua sin librerias
+// function mostrarGastosAgrupadosWeb(id, agrup, periodo) {
+
+//     let contenedor = document.getElementById(id);
+
+//     // <div class="agrupacion">          
+//     let divAgrupacion = document.createElement("div");
+//     divAgrupacion.className = "agrupacion";
+
+//     //     <!-- PERIODO será "mes", "día" o "año" en función de si el parámetro
+//     // de la función es "mes", "dia" o "anyo" respectivamente -->
+//     //      <h1>Gastos agrupados por PERIODO</h1>
+//     let h1Gastos = document.createElement("h1");
+//     h1Gastos.textContent = "Gastos agrupados por " + periodo;
+//     divAgrupacion.append(h1Gastos);
+
+//     //     <!-- Se deberá crear un div.agrupacion-dato para cada propiedad del objeto agrup:     
+
+//     Object.entries(agrup).forEach(([clave, valor]) => {
+//         let divAgrupacionDato = document.createElement("div");
+//         divAgrupacionDato.className = "agrupacion-dato";
+
+//         let spanAgrupacionDatoClave = document.createElement("span");
+//         spanAgrupacionDatoClave.className = "agrupacion-dato-clave";
+//         spanAgrupacionDatoClave.textContent = clave;
+//         divAgrupacionDato.append(spanAgrupacionDatoClave);
+
+//         let spanAgrupacionDatoValor = document.createElement("span");
+//         spanAgrupacionDatoValor.className = "agrupacion-dato-valor"
+//         spanAgrupacionDatoValor.textContent = valor;
+//         divAgrupacionDato.append(spanAgrupacionDatoValor)
+
+
+//         divAgrupacion.append(divAgrupacionDato);
+//     });
+
+//     contenedor.append(divAgrupacion);
+// }
 
 function repintar() {
 
@@ -174,6 +272,10 @@ function repintar() {
     for (let i = 0; i < gastos.length; i++) {
         mostrarGastoWeb("listado-gastos-completo", gastos[i])
     }
+mostrarGastosAgrupadosWeb("agrupacion-anyo", gestionPresupuesto.agruparGastos("anyo"),"anyo")
+mostrarGastosAgrupadosWeb("agrupacion-anyo", gestionPresupuesto.agruparGastos("mes"),"mes")
+mostrarGastosAgrupadosWeb("agrupacion-anyo", gestionPresupuesto.agruparGastos("dia"),"dia")
+
 }
 
 function actualizarPresupuestoWeb() {
@@ -366,8 +468,8 @@ let EditarHandleFormulario = {
 
         //Evento para el boton Enviar (API)
         let forHandleAPI = Object.create(FormuHandleApi);
-        forHandleAPI.gasto=this.gasto;
-        formu.querySelector("button.gasto-enviar-api").addEventListener("click",forHandleAPI)
+        forHandleAPI.gasto = this.gasto;
+        formu.querySelector("button.gasto-enviar-api").addEventListener("click", forHandleAPI)
 
         //desactivar boton
         botonPulsado.disabled = true;
